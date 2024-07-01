@@ -64,7 +64,7 @@ test chan-4.5 {chan command: check valid inValue, invalid outValue} -body {
 } -returnCodes error -result {bad value for -eofchar: must be non-NUL ASCII character}
 test chan-4.6 {chan command: check no inValue, valid outValue} -body {
     chan configure stdout -eofchar [list {} \x27]
-} -returnCodes error -result {bad value for -eofchar: must be non-NUL ASCII character} -cleanup {chan configure stdout -eofchar {}}
+} -returnCodes error -result {bad value for -eofchar: must be non-NUL ASCII character}
 
 test chan-5.1 {chan command: copy subcommand} -body {
     chan copy foo
@@ -120,6 +120,16 @@ test chan-15.2 {chan command: truncate subcommand} -setup {
     chan truncate $f 2
     read $f
 } -result 12 -cleanup {
+    catch {close $f}
+    catch {removeFile $file}
+}
+test chan-15.3 {chan command: isbinary subcommand} -setup {
+    set file [makeFile {} testIsBinary]
+    set f [open $file w+]
+    fconfigure $f -translation binary
+} -body {
+    chan isbinary $f
+} -result 1 -cleanup {
     catch {close $f}
     catch {removeFile $file}
 }

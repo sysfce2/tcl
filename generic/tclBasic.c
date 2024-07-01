@@ -1198,6 +1198,10 @@ Tcl_CreateInterp(void)
     Tcl_CreateObjCommand(interp, "::tcl::unsupported::corotype",
 	    CoroTypeObjCmd, NULL, NULL);
 
+    /* Load and intialize ICU */
+    Tcl_CreateObjCommand(interp, "::tcl::unsupported::loadIcu",
+	    TclLoadIcuObjCmd, NULL, NULL);
+
     /* Export unsupported commands */
     nsPtr = Tcl_FindNamespace(interp, "::tcl::unsupported", NULL, 0);
     if (nsPtr) {
@@ -2791,7 +2795,7 @@ Tcl_CreateObjCommand(
 				/* If not NULL, gives a function to call when
 				 * this command is deleted. */
 {
-    Interp *iPtr = (Interp *) interp;
+    Interp *iPtr = (Interp *)interp;
     Namespace *nsPtr;
     const char *tail;
 
@@ -2800,7 +2804,7 @@ Tcl_CreateObjCommand(
 	 * The interpreter is being deleted. Don't create any new commands;
 	 * it's not safe to muck with the interpreter anymore.
 	 */
-	return (Tcl_Command) NULL;
+	return NULL;
     }
 
     /*

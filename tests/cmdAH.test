@@ -23,8 +23,8 @@ testConstraint testsetplatform [llength [info commands testsetplatform]]
 testConstraint testvolumetype  [llength [info commands testvolumetype]]
 testConstraint testbytestring [llength [info commands testbytestring]]
 testConstraint time64bit [expr {
-    $::tcl_platform(pointerSize) >= 8 ||
-    [llength [info command testsize]] && [testsize st_mtime] >= 8
+    ([llength [info command testsize]] ?
+	[testsize st_mtime] : $::tcl_platform(pointerSize)) >= 8
 }]
 testConstraint linkDirectory [expr {
     ![testConstraint win] ||
@@ -1800,7 +1800,7 @@ test cmdAH-27.1 {Tcl_FileObjCmd: size} -returnCodes error -body {
 test cmdAH-27.2 {Tcl_FileObjCmd: size} {
     set oldsize [file size $gorpfile]
     set f [open $gorpfile a]
-    fconfigure $f -translation lf -eofchar {}
+    fconfigure $f -translation lf
     puts $f "More text"
     close $f
     expr {[file size $gorpfile] - $oldsize}
